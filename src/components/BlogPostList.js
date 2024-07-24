@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import axios from 'axios';
-import BlogPostList from './components/BlogPostList';
-import BlogPostDetails from './components/BlogPostDetails';
+import { Link } from 'react-router-dom';
 
-const App = () => {
+const BlogPostList = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -32,16 +30,23 @@ const App = () => {
     fetchPosts();
   }, [page]);
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <Router>
-      <div>
-        <Routes>
-          <Route path="/" element={<BlogPostList />} />
-          <Route path="/post/:id" element={<BlogPostDetails posts={posts} />} />
-        </Routes>
-      </div>
-    </Router>
+    <div style={{ padding: '20px' }}>
+      {posts.map((post, index) => (
+        <div key={index} style={{ marginBottom: '20px' }}>
+          <h2><Link to={`/post/${index}`}>{post.title}</Link></h2>
+          <p>{post.description}</p>
+          <p>{new Date(post.publishedAt).toLocaleDateString()}</p>
+        </div>
+      ))}
+      <button onClick={() => setPage(page - 1)} disabled={page === 1}>Previous</button>
+      <button onClick={() => setPage(page + 1)}>Next</button>
+    </div>
   );
 };
 
-export default App;
+export default BlogPostList;
